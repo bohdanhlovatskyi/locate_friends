@@ -1,16 +1,75 @@
+<!-- Modified cover bootstrap template https://getbootstrap.com/docs/5.0/examples/cover/ -->
 <!DOCTYPE html>
 
 <head>
-    <title> Locate friends </title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+    integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl"
+    crossorigin="anonymous"
+  />
+  <title>Locate friends</title>
+  <style>
+    .screen {
+      height: 100vh;
+    }
+  </style>
 </head>
 
-<body>
-    <form action="/get_user" method="POST">
-        <div style="background-color: orange">
-            <div class="t">
-                <input type="text" name="user_name" id="user_name" aria-label="User name">
+<body class="text-center text-white bg-dark">
+  <div
+    class="container screen d-flex w-100 p-3 mx-auto flex-column text-center"
+  >
+    <header class="mb-auto">
+      <div>
+        <h3 class="float-md-start mb-0">Locate YF</h3>
+      </div>
+    </header>
+    <div class="row h-100 justify-content-center align-items-center">
+      <div class="col-md-6">
+        <main class="px-3">
+          <h1>Locate your friends</h1>
+          <p class="lead">
+            Locate your friends allows you to find your Twitter friends on map
+          </p>
+          <div class="lead d-flex justify-content-center">
+            <div class="col-md-8">
+              <form action="/" method="POST">
+                <div class="input-group mb-3">
+                  <span class="input-group-text px-3">@</span>
+                  <input
+                    type="text"
+                    class="form-control px-3"
+                    placeholder="Username"
+                    aria-label="Username"
+                    name="user_name"
+                  />
+                </div>
+                <div class="input-group mb-3">
+                  <span class="input-group-text">&#128273</span>
+                  <input
+                    type="text"
+                    class="form-control px-3"
+                    placeholder="Bearer Token"
+                    aria-label="Bearer Token"
+                    name="bearer_token"
+                  />
+                </div>
+                <div>
+                  <button
+                    type="submit"
+                    class="btn btn-lg btn-secondary fw-bold border-white bg-dark"
+                  >
+                    Locate friends
+                  </button>
+                </div>
+              </form>
             </div>
-            <button type="submit" name="locate" value="user_name" class="btn-link"> Locate friend </button>
-        </div>
-    </form>
+          </div>
+        </main>
+      </div>
+    </div>
+  </div>
 </body>

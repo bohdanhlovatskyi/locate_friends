@@ -1,35 +1,32 @@
 import requests
 import urllib
-import json
 import folium
-import reverse_geocoder as rg
+import json
+import tweepy
+from folium.plugins import MarkerCluster
 from typing import Dict, List, Tuple
 
 
-def get_friends_list(user_screen_name: str, outfile_name: str='result.json'):
+def get_friends_list(user_screen_name: str, bearer_token: str):
     '''
     '''
 
-    with open('secret.txt') as file:
-        BEARER_TOKEN = file.readlines()[0]
     BASE_URL = "https://api.twitter.com/"
     URL = f'{BASE_URL}1.1/friends/list.json'
     search_headers = {
-        'Authorization': f'Bearer {BEARER_TOKEN}'
+        'Authorization': f'Bearer {bearer_token}'
     }
+
     search_params = {
-        'screen_name': f'{user_screen_name}',
+        'screen_name': f'@{user_screen_name}',
         'count': 50
     }
 
     response = requests.get(URL,
                             headers=search_headers,
                             params=search_params)
-    if response.status_code != 200:
-        return f'There is something wrong with authorisation: {response.status_code}'
 
-    with open(outfile_name, 'w') as outfile:
-        json.dump(response.text, outfile)
+    return response.json()
 
 def get_location(adress: str, adresses: Dict[str, Tuple[str]]={}) -> List[str]:
     '''
@@ -52,39 +49,23 @@ def get_location(adress: str, adresses: Dict[str, Tuple[str]]={}) -> List[str]:
 
     return adresses[adress]
 
-def get_friends_locations(path_to_file: str='tw.json') -> str:
+def get_friends_locations(user_screen_name, bearer_token) -> str:
     '''
     Gets user name from twitter, returns name of file with created html map.
     '''
 
-    with open(path_to_file) as json_file:
-        data = json.load(json_file)
+    data = get_friends_list(user_screen_name, bearer_token)
+    try:
+        info_on_users = [(user['name'], user['location']) for user in data['users']]
+    except KeyError:
+        return None
+    points_to_put_on_map = [(name, get_location(address)) for name, address in info_on_users]
+    points_to_put_on_map = [(name, tuple(map(float, coordinates))) for name, coordinates in points_to_put_on_map if coordinates]
 
-    info_on_users = [(user['name'], user['location']) for user in data['users']]
-    points_to_put_on_map = [(elm[0], get_location(elm[1])) for elm in info_on_users]
-    points_to_put_on_map = [(point[0], tuple(map(float, point[1]))) for point in points_to_put_on_map if point[1]]
-
-    # TODO: add user location
-    locations_map = folium.Map()
-    friends = folium.FeatureGroup()
+    locations_map = folium.Map(tiles='stamenterrain')
+    friends = MarkerCluster()
     for name, coordinates in points_to_put_on_map:
-        friends.add_child(folium.Marker(coordinates, popup=name, icon=folium.Icon(color='red')))
+        folium.Marker(coordinates, popup=name, icon=folium.Icon(color='red')).add_to(friends)
     friends.add_to(locations_map)
 
-    file_name = 'templates/map.html'
-    locations_map.save(file_name)
-
-    return file_name
-
-
-def main(user_screen_name: str) -> str:
-    '''
-    Returns file name (location of map)
-    '''
-
-    file_name = 'results.json'
-    out = get_friends_list(user_screen_name, file_name)
-    if out:
-        return out
-
-    return get_friends_locations(file_name)
+    return locations_map # folium Map instance
