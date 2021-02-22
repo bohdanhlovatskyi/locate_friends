@@ -14,12 +14,13 @@ def get_user_name():
     if request.method == 'POST':
         user_name = str(request.form['user_name'])
         bearer_token = str(request.form['bearer_token'])
-        map = get_friends_locations(user_name, bearer_token)
-        if map:
-            return map._repr_html_()
-        else:
-            flash('There is no such person on Twitter', category='error')
-            return render_template('index.html')
+        friends_map = get_friends_locations(user_name, bearer_token)
+        if friends_map:
+            # can be done via get_route also without breaking laws of OOP)
+            return friends_map._repr_html_()
+
+        flash('There is no such person on Twitter', category='error')
+        return render_template('index.html')
 
     return render_template('index.html')
 

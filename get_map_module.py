@@ -1,14 +1,17 @@
+'''
+Contains functions that implement the website: make request to twitter,
+process info and create folium map to display it.
+'''
+
+from folium.plugins import MarkerCluster
+from typing import Dict, List, Tuple
 import requests
 import urllib
 import folium
-import json
-import tweepy
-from folium.plugins import MarkerCluster
-from typing import Dict, List, Tuple
-
 
 def get_friends_list(user_screen_name: str, bearer_token: str):
     '''
+    Makes request to twitter to get friends list of inputed user
     '''
 
     BASE_URL = "https://api.twitter.com/"
@@ -60,7 +63,8 @@ def get_friends_locations(user_screen_name, bearer_token) -> str:
     except KeyError:
         return None
     points_to_put_on_map = [(name, get_location(address)) for name, address in info_on_users]
-    points_to_put_on_map = [(name, tuple(map(float, coordinates))) for name, coordinates in points_to_put_on_map if coordinates]
+    points_to_put_on_map = [(name, tuple(map(float, coordinates)))
+                            for name, coordinates in points_to_put_on_map if coordinates]
 
     locations_map = folium.Map(tiles='stamenterrain')
     friends = MarkerCluster()
